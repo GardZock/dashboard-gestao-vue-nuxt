@@ -3,7 +3,7 @@ import useColorMode from './useColor.vue';
 </script>
 
 <template>
-    <nav class="flex justify-between p-4 items-center border-b border-gray-300 mb-5">
+    <nav class="flex justify-between p-4 items-center border-b border-gray-300 pb-5">
         <div>
             <a href="/"><img class="w-[150px] pointer-events-none" src="~/public/logo.webp" alt="Logo"></a>
         </div>

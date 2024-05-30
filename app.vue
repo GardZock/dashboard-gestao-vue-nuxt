@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const appConfig = useAppConfig()
 import Nav from './components/nav.vue';
+import Footer from './components/footer.vue';
 useHead({
   title: 'CRUD - App',
   meta: [
@@ -10,6 +11,9 @@ useHead({
 </script>
 
 <template>
-  <Nav/>
-  <NuxtPage page-key="static" />
+  <div class="flex flex-col min-h-[100vh]">
+    <Nav />
+    <NuxtPage page-key="static" class="grow" />
+    <Footer />
+  </div>
 </template>

@@ -89,34 +89,42 @@ const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.v
 const headers = new Headers();
 headers.append("Content-Type", "application/json")
 
-const { pending, data: employees } = await useLazyAsyncData<Employer[]>('employees', () => $fetch(`http://localhost:8000/employees?id=${search.value ? search.value : "ALL"}`,
+const { pending, data: employees } = await useLazyAsyncData<Employer[]>('employees', () => $fetch(`http://localhost:8000/employees?id=ALL`,
     {
         method: 'get',
         headers,
     }), {
     default: () => [],
-    watch: [page, search, pageCount, sort]
+    watch: [page, pageCount, sort]
 })
+
+const filteredRows = computed(() => {
+    if (employees) {
+        if (!search.value) {
+            return employees.value
+        }
+
+        return employees.value.filter((employer) => {
+            return Object.values(employer).some((value) => {
+                return String(value).toLowerCase().includes(search.value.toLowerCase())
+            })
+        })
+    } else return undefined;
+})
+
+
 </script>
 
 <template>
-    <UCard class="w-full shadow-lg border-2 dark:bg-gray-800" :ui="{
-        base: 'p-4',
-        ring: '',
-        divide: 'divide-y divide-gray-200 dark:divide-gray-400',
-        header: { padding: 'px-4 py-5' },
-        body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-400' },
-        footer: { padding: 'p-4' }
-    }">
-        <template #header>
-            <h2 class="font-semibold text-center text-4xl text-gray-900 dark:text-white leading-tight">
-                Funcionários
-            </h2>
-        </template>
-
-        <div class="flex w-full items-center gap-4">
-            <div class="flex w-full py-3.5 border-b border-gray-200 dark:border-gray-700">
-                <UInput v-model="search" placeholder="Filtrar funcionários..." class="w-full"
+    <div>
+        <h2 class="font-semibold text-center text-4xl text-gray-900 dark:text-white leading-tight">
+            Funcionários
+        </h2>
+    </div>
+    <div>
+        <div class="flex w-full items-center gap-4 border-b">
+            <div class="flex w-full py-3.5 border-gray-200 dark:border-gray-700">
+                <UInput v-model="search" placeholder="Pesquisar funcionário..." class="w-full"
                     icon="i-heroicons-magnifying-glass-20-solid" size="xl" trailing />
             </div>
             <div>
@@ -124,14 +132,18 @@ const { pending, data: employees } = await useLazyAsyncData<Employer[]>('employe
                     size="xl" />
             </div>
             <div>
-                <UButton icon="i-heroicons-plus-20-solid" size="lg" color="gray" square variant="solid" />
+                <UButton icon="i-heroicons-user-plus-20-solid" size="lg" color="gray" square variant="solid" />
             </div>
         </div>
 
-        <UTable :rows="employees ? employees : undefined" :columns="columns" :ui="{
+        <UTable :rows="filteredRows" :columns="columns" :ui="{
             divide: 'divide-y divide-gray-300 dark:divide-gray-700',
             tbody: 'divide-y divide-gray-200 dark:divide-gray-500',
-        }" v-model:sort="sort" sort-mode="auto" :loading="pending">
+            base: 'w-full',
+            emptyState: {
+                icon: 'w-10 h-10 mx-auto text-gray-400 dark:text-gray-500 mb-4'
+            }
+        }" v-model:sort="sort" sort-mode="auto" :loading="pending" :empty-state="{ icon: 'i-heroicons-user-group-20-solid', label: 'Nenhum funcionário encontrado.' }">
 
             <template #status-header="{ column }">
                 <div class="text-center">
@@ -166,14 +178,14 @@ const { pending, data: employees } = await useLazyAsyncData<Employer[]>('employe
             <template #actions-data="{ row }">
                 <div class="text-center">
                     <UDropdown :items="items(row)">
-                        <UButton color="gray" variant="soft" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+                        <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
                     </UDropdown>
                 </div>
             </template>
         </UTable>
 
-        <template #footer>
-            <div class="flex flex-wrap justify-between items-center">
+        <template>
+            <div class="flex justify-between items-center w-full mt-4 px-2">
                 <div>
                     <span class="text-sm leading-5">
                         Mostrando
@@ -186,16 +198,18 @@ const { pending, data: employees } = await useLazyAsyncData<Employer[]>('employe
                     </span>
                 </div>
 
-                <UPagination v-model="page" :page-count="pageCount" :total="pageTotal" :ui="{
-                    wrapper: 'flex items-center gap-1',
-                    rounded: '!rounded-full min-w-[32px] justify-center',
-                    default: {
-                        activeButton: {
-                            variant: 'outline'
+                <div>
+                    <UPagination v-model="page" :page-count="pageCount" :total="pageTotal" :ui="{
+                        wrapper: 'flex items-center gap-1',
+                        rounded: '!rounded-full min-w-[32px] justify-center',
+                        default: {
+                            activeButton: {
+                                variant: 'outline'
+                            }
                         }
-                    }
-                }" />
+                    }" />
+                </div>
             </div>
         </template>
-    </UCard>
+    </div>
 </template>
