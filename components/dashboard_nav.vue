@@ -22,7 +22,7 @@ const links = [
 
 <template>
     <UVerticalNavigation :links="links" :ui="{
-        base: 'text-xl',
+        base: 'text-[18px]',
         icon: {
             base: 'w-6 h-6'
         }

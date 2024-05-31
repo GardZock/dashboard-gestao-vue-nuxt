@@ -1,15 +1,4 @@
-interface Sale {
-    costumer_name: string,
-    products: [
-        {
-            id: string,
-            price: number,
-            quantity: number
-        }
-    ],
-    sellDate: string,
-    id: string
-}
+import type { Sale } from '~/assets/scripts/interfaces';
 
 function getTopSoldProducts(sales: Sale[]): { name: string; quantity: number }[] {
   const productQuantities: { [key: string]: number } = {};

@@ -1,31 +1,17 @@
-interface Sale {
-    costumer_name: string,
-    products: [
-        {
-            id: string,
-            price: number,
-            quantity: number
-        }
-    ],
-    sellDate: string,
-    id: string
-}
+import type { Sale } from '~/assets/scripts/interfaces';
 
 function countProductsByMonth(sales: Sale[]): { [key: string]: number } {
-    const productsByMonth: { [key: string]: number } = {};
+    const salesByMonth: { [key: string]: number } = {};
+    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+    
+    for (const sale of sales) {
+        const month = monthNames[new Date(sale.sellDate).getMonth()]
+        for (const product of sale.products) {
+            salesByMonth[month] ? salesByMonth[month] += product.quantity : salesByMonth[month] = product.quantity 
+        }
+    }
 
-    sales.forEach(sale => {
-        const month = sale.sellDate.substring(0, 7); // Extrai o ano e o mês (YYYY-MM)
-        sale.products.forEach(product => {
-            if (productsByMonth[month]) {
-                productsByMonth[month] += product.quantity;
-            } else {
-                productsByMonth[month] = product.quantity;
-            }
-        });
-    });
-
-    return productsByMonth;
+    return salesByMonth
 }
 
 export { countProductsByMonth }

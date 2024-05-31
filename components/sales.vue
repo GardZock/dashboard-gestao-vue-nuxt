@@ -3,18 +3,7 @@ import { countProductsByMonth } from '~/assets/scripts/countMonthly';
 import { getTopSoldProducts } from '~/assets/scripts/getTopSaled';
 import Line from '~/components/line.vue'
 
-interface Sale {
-    costumer_name: string,
-    products: [
-        {
-            id: string,
-            price: number,
-            quantity: number
-        }
-    ],
-    sellDate: string,
-    id: string
-}
+import type { Sale } from '~/assets/scripts/interfaces';
 
 const sales: Sale[] = [
     {
@@ -108,6 +97,10 @@ const sales: Sale[] = [
                 id: "p8",
                 price: 110.00,
                 quantity: 1
+            },{
+                id: "p12",
+                price: 60.00,
+                quantity: 5
             }
         ],
         sellDate: "2024-05-22",
@@ -132,6 +125,10 @@ const sales: Sale[] = [
                 id: "p10",
                 price: 60.00,
                 quantity: 2
+            },{
+                id: "p12",
+                price: 60.00,
+                quantity: 5
             }
         ],
         sellDate: "2024-02-24",
@@ -144,20 +141,17 @@ function sortSalesByDate(sales: Sale[]): Sale[] {
 }
 
 const lastSales = sortSalesByDate(sales).slice(0, 3);
-
 const salesByMonth = countProductsByMonth(sales)
-const salesByMonthArray = Object.entries(salesByMonth).map(([month, count]) => (count)).reverse();
-
 const topSales = getTopSoldProducts(sales)
 
 const data = {
-    labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"],
+    labels: Object.keys(salesByMonth).reverse(),
     datasets: [
         {
             label: "Vendas",
             backgroundColor: "#36e4305f",
             borderColor: "#36e430",
-            data: salesByMonthArray,
+            data: Object.values(salesByMonth).reverse(),
             fill: true
         }
     ]
@@ -173,6 +167,11 @@ const options = {
         }
     },
     responsive: true,
+    elements: {
+        line: {
+            tension: 0.4
+        }
+    }
 }
 
 </script>
@@ -180,7 +179,7 @@ const options = {
 <template>
     <div class="flex w-full">
         <div class="w-full p-4">
-            <UCard class="">
+            <UCard class="shadow-md">
                 <template #header>
                     <div>
                         <p class="font-bold">Vendas Mensais</p>
@@ -193,7 +192,7 @@ const options = {
     </div>
     <div class="flex w-full">
         <div class="w-1/2 p-4">
-            <UCard>
+            <UCard class="shadow-md">
                 <template #header>
                     <div>
                         <p>Últimas vendas</p>
@@ -227,7 +226,7 @@ const options = {
             </UCard>
         </div>
         <div class="w-1/2 p-4">
-            <UCard>
+            <UCard class="shadow-md">
                 <template #header>
                     <div>
                         <p>Produtos Mais Vendidos</p>

@@ -1,16 +1,5 @@
 <script setup lang="ts">
-interface Product {
-    name: string,
-    price: number,
-    quantity: number,
-    category: "ROUPA" | "MÓVEIS" | "ELETRÔNICOS",
-    sales?: {
-        id: string,
-        price: number,
-        quantity: number
-    }[],
-    id: string
-}
+import type { Product } from '~/assets/scripts/interfaces';
 
 const search = ref('')
 
@@ -153,7 +142,7 @@ const filteredRows = computed(() => {
             <UInput v-model="search" placeholder="Filtrar produtos..." class="w-full"
                 icon="i-heroicons-magnifying-glass-20-solid" size="xl" trailing />
         </div>
-        <div>
+        <div v-if="filteredRows">
             <UButton icon="i-heroicons-plus-20-solid" size="xl" color="gray" square variant="solid" />
         </div>
     </div>
@@ -178,13 +167,13 @@ const filteredRows = computed(() => {
                     }) }}</p>
                 </div>
                 <div class="mt-5 flex gap-5 w-full">
-                    <p>Categoria: {{ prod.category[0].toUpperCase() + prod.category.slice(1,
+                    <p><strong>Categoria:</strong> {{ prod.category[0].toUpperCase() + prod.category.slice(1,
                         prod.category.length).toLowerCase() }}</p>
-                    <p>Estoque: {{ prod.quantity }}</p>
-                    <p>Vendas: {{ prod.sales?.length ? prod.sales.length : 0 }}</p>
+                    <p><strong>Estoque:</strong> {{ prod.quantity }}</p>
+                    <p><strong>Vendas:</strong> {{ prod.sales?.length ? prod.sales.length : 0 }}</p>
                 </div>
                 <div class="w-full">
-                    <ul class="flex w-full mt-5 gap-5">
+                    <ul class="flex w-full mt-5 justify-between">
                         <li>
                             <UButton icon="i-heroicons-pencil-square" size="lg" color="gray" square variant="solid" />
                         </li>

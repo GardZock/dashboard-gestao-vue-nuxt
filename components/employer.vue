@@ -1,11 +1,6 @@
 <script setup lang="ts">
-interface Employer {
-    name: string,
-    status: boolean | string,
-    salary: number | string,
-    role: string,
-    id: string
-}
+import type { Employer } from '~/assets/scripts/interfaces';
+import MData from '~/components/employer_modal.vue'
 
 const columns = [{
     key: 'name',
@@ -53,7 +48,6 @@ const items = (row: { id: any; }) => [
                         "id": "12312451235"
                     }),
                 })
-
 
         }
     }]
@@ -112,11 +106,68 @@ const filteredRows = computed(() => {
     } else return undefined;
 })
 
+const ModalFields = [
+    {
+        label: "Nome",
+        name: "name",
+        options: {
+            text: {
+                placeholder: "Digite o nome do funcionário.",
+                size: "xl" as "xl",
+                color: "gray",
+                required: true
+            }
+        }
+    },
+    {
+        label: "Salário",
+        name: "salary",
+        options: {
+            text: {
+                placeholder: "Digite o salário do funcionário.",
+                description: "Padrão para números decimais é: 0.00. Exemplo: 2300.23",
+                size: "xl" as "xl",
+                color: "gray",
+                required: true
+            }
+        }
+    },
+    {
+        label: "Setor",
+        name: "role",
+        options: {
+            select_menu: {
+                placeholder: "Selecione um setor",
+                options: [
+                    "Desenvolvimento",
+                    "Recursos Humanos",
+                    "Administração"
+                ],
+                required: true
+            }
+        }
+    }
+]
+
+const modal = useModal()
+const toast = useToast()
+
+function openModal () {
+  modal.open(MData, {
+    fields: ModalFields,
+    onSuccess () {
+      toast.add({
+        title: 'Success !',
+        id: 'modal-success'
+      })
+    }
+  })
+}
 
 </script>
 
 <template>
-    <div>
+    <div class="p-4">
         <h2 class="font-semibold text-center text-4xl text-gray-900 dark:text-white leading-tight">
             Funcionários
         </h2>
@@ -132,7 +183,8 @@ const filteredRows = computed(() => {
                     size="xl" />
             </div>
             <div>
-                <UButton icon="i-heroicons-user-plus-20-solid" size="lg" color="gray" square variant="solid" />
+                <UButton icon="i-heroicons-user-plus-20-solid" size="lg" color="gray" square variant="solid"
+                    @click="openModal" />
             </div>
         </div>
 
@@ -143,7 +195,8 @@ const filteredRows = computed(() => {
             emptyState: {
                 icon: 'w-10 h-10 mx-auto text-gray-400 dark:text-gray-500 mb-4'
             }
-        }" v-model:sort="sort" sort-mode="auto" :loading="pending" :empty-state="{ icon: 'i-heroicons-user-group-20-solid', label: 'Nenhum funcionário encontrado.' }">
+        }" v-model:sort="sort" sort-mode="auto" :loading="pending"
+            :empty-state="{ icon: 'i-heroicons-user-group-20-solid', label: 'Nenhum funcionário encontrado.' }">
 
             <template #status-header="{ column }">
                 <div class="text-center">
@@ -184,8 +237,7 @@ const filteredRows = computed(() => {
             </template>
         </UTable>
 
-        <template>
-            <div class="flex justify-between items-center w-full mt-4 px-2">
+        <div class="flex justify-between items-center w-full mt-4 px-2">
                 <div>
                     <span class="text-sm leading-5">
                         Mostrando
@@ -210,6 +262,5 @@ const filteredRows = computed(() => {
                     }" />
                 </div>
             </div>
-        </template>
     </div>
 </template>

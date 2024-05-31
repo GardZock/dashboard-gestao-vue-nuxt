@@ -11,9 +11,12 @@ useHead({
 </script>
 
 <template>
-  <div class="flex flex-col min-h-[100vh]">
-    <Nav />
-    <NuxtPage page-key="static" class="grow" />
-    <Footer />
+  <div>
+    <div class="flex flex-col min-h-[100vh] w-full">
+      <Nav />
+      <NuxtPage page-key="static" class="grow" />
+      <Footer />
+    </div>
+    <UModals />
   </div>
 </template>
