@@ -1,4 +1,4 @@
-import type { Sale } from '~/assets/scripts/interfaces';
+import type { Sale } from '~/server/interfaces';
 
 function countProductsByMonth(sales: Sale[]): { [key: string]: number } {
     const salesByMonth: { [key: string]: number } = {};

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Product } from '~/assets/scripts/interfaces';
+import type { Product } from '~/server/interfaces';
 
 const search = ref('')
 

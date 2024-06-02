@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { countProductsByMonth } from '~/assets/scripts/countMonthly';
-import { getTopSoldProducts } from '~/assets/scripts/getTopSaled';
+import { countProductsByMonth } from '~/server/countMonthly';
+import { getTopSoldProducts } from '~/server/getTopSaled';
 import Line from '~/components/line.vue'
 
-import type { Sale } from '~/assets/scripts/interfaces';
+import type { Sale } from '~/server/interfaces';
 
 const sales: Sale[] = [
     {
@@ -186,7 +186,10 @@ const options = {
                     </div>
                 </template>
 
-                <Line :data="data" :options="options" height="20%" width="100%" />
+                <Line v-if="sales" :data="data" :options="options" height="20%" width="100%" />
+                <div class="h-1/5 w-full flex justify-center items-center">
+                    <h2>Sem dados</h2>
+                </div>
             </UCard>
         </div>
     </div>

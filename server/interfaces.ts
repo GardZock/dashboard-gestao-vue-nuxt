@@ -1,8 +1,12 @@
 interface Employer {
     name: string,
-    status: boolean | string,
-    salary: number | string,
+    status: boolean,
+    salary: number,
     role: string,
+    avatarImage: {
+        base64: string | null,
+        imgType: string | null
+    },
     id: string
 }
 

@@ -1,4 +1,4 @@
-import type { Sale } from '~/assets/scripts/interfaces';
+import type { Sale } from '~/server/interfaces';
 
 function getTopSoldProducts(sales: Sale[]): { name: string; quantity: number }[] {
   const productQuantities: { [key: string]: number } = {};

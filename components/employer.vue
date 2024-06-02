@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Employer } from '~/assets/scripts/interfaces';
+import type { Employer } from '~/server/interfaces';
 import MData from '~/components/employer_modal.vue'
+import ViewEmployer from '~/components/view_employer.vue';
 
 const columns = [{
     key: 'name',
@@ -8,7 +9,7 @@ const columns = [{
     sortable: true
 }, {
     key: 'role',
-    label: 'Cargo'
+    label: 'Setor'
 }, {
     key: 'salary',
     label: 'Salário',
@@ -21,13 +22,24 @@ const columns = [{
     key: 'actions'
 }]
 
-const items = (row: { id: any; }) => [
+const items = (row: Employer) => [
     [{
-        label: 'Edit',
+        label: 'Atualizar',
         icon: 'i-heroicons-pencil-square-20-solid',
-        click: () => console.log('Edit', row.id)
+        click: () => {
+            modal.open(MData, {
+                type: "UPDATE",
+                fields: ModalFields,
+                onSuccess() {
+                    toast.add({
+                        title: 'Success !',
+                        id: 'modal-success'
+                    })
+                }
+            })
+        }
     }, {
-        label: 'Delete',
+        label: 'Deletar',
         icon: 'i-heroicons-trash-20-solid',
         click: async () => {
             await useFetch(`localhost:5000/api/delete?id=${row.id}`)
@@ -36,19 +48,10 @@ const items = (row: { id: any; }) => [
         label: 'Ver Mais',
         icon: 'i-heroicons-information-circle-20-solid',
         click: async () => {
-
-            const headers = new Headers();
-            headers.append("Content-Type", "application/json")
-
-            const test = await $fetch(`http://localhost:8000/employees`,
-                {
-                    method: 'get',
-                    headers,
-                    body: JSON.stringify({
-                        "id": "12312451235"
-                    }),
+            modal.open(ViewEmployer, {
+                    employer: row,
+                    close: modal.close
                 })
-
         }
     }]
 ]
@@ -83,7 +86,7 @@ const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.v
 const headers = new Headers();
 headers.append("Content-Type", "application/json")
 
-const { pending, data: employees } = await useLazyAsyncData<Employer[]>('employees', () => $fetch(`http://localhost:8000/employees?id=ALL`,
+const { pending, data: employees } = await useLazyAsyncData<Employer[]>('employees', () => $fetch(`http://localhost:8080/employees?id=ALL`,
     {
         method: 'get',
         headers,
@@ -146,22 +149,39 @@ const ModalFields = [
                 required: true
             }
         }
+    },
+    {
+        label: "Foto",
+        name: "photo",
+        options: {
+            image: {
+                types: [
+                    "image/webp",
+                    "image/jpeg",
+                    "image/jpg",
+                    "image/png"
+                ],
+                description: "Tipos surpotados: .png, .webp, .jpeg, .jpg.",
+                required: false
+            }
+        }
     }
 ]
 
 const modal = useModal()
 const toast = useToast()
 
-function openModal () {
-  modal.open(MData, {
-    fields: ModalFields,
-    onSuccess () {
-      toast.add({
-        title: 'Success !',
-        id: 'modal-success'
-      })
-    }
-  })
+function openCreate() {
+    modal.open(MData, {
+        type: "CREATE",
+        fields: ModalFields,
+        onSuccess() {
+            toast.add({
+                title: 'Success !',
+                id: 'success'
+            })
+        }
+    })
 }
 
 </script>
@@ -184,7 +204,7 @@ function openModal () {
             </div>
             <div>
                 <UButton icon="i-heroicons-user-plus-20-solid" size="lg" color="gray" square variant="solid"
-                    @click="openModal" />
+                    @click="openCreate" />
             </div>
         </div>
 
@@ -238,29 +258,29 @@ function openModal () {
         </UTable>
 
         <div class="flex justify-between items-center w-full mt-4 px-2">
-                <div>
-                    <span class="text-sm leading-5">
-                        Mostrando
-                        <span class="font-medium">{{ pageFrom }}</span>
-                        até
-                        <span class="font-medium">{{ pageTo }}</span>
-                        de
-                        <span class="font-medium">{{ pageTotal }}</span>
-                        resultados.
-                    </span>
-                </div>
-
-                <div>
-                    <UPagination v-model="page" :page-count="pageCount" :total="pageTotal" :ui="{
-                        wrapper: 'flex items-center gap-1',
-                        rounded: '!rounded-full min-w-[32px] justify-center',
-                        default: {
-                            activeButton: {
-                                variant: 'outline'
-                            }
-                        }
-                    }" />
-                </div>
+            <div>
+                <span class="text-sm leading-5">
+                    Mostrando
+                    <span class="font-medium">{{ pageFrom }}</span>
+                    até
+                    <span class="font-medium">{{ pageTo }}</span>
+                    de
+                    <span class="font-medium">{{ pageTotal }}</span>
+                    resultados.
+                </span>
             </div>
+
+            <div>
+                <UPagination v-model="page" :page-count="pageCount" :total="pageTotal" :ui="{
+                    wrapper: 'flex items-center gap-1',
+                    rounded: '!rounded-full min-w-[32px] justify-center',
+                    default: {
+                        activeButton: {
+                            variant: 'outline'
+                        }
+                    }
+                }" />
+            </div>
+        </div>
     </div>
 </template>
