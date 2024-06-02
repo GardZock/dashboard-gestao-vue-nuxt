@@ -7,7 +7,6 @@ const { employer } = defineProps<{
 }>()
 
 const avatar = employer.avatarImage.base64 ? `data:image/${employer.avatarImage.imgType};base64, ${employer.avatarImage.base64}` : 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png'
-console.log(avatar)
 </script>
 
 <template>
@@ -25,7 +24,7 @@ console.log(avatar)
             <UContainer class="justify-center flex">
                 <div>
                     <div class="border-b text-center p-4">
-                        <div class="p-4">
+                        <div class="p-4 flex justify-center">
                             <img :src="avatar" alt="User Image" class="w-[152px] h-[152px] rounded-md">
                         </div>
                         <h2 class="font-bold text-xl">{{ employer.name }}</h2>

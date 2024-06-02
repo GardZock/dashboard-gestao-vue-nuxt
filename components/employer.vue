@@ -2,6 +2,7 @@
 import type { Employer } from '~/server/interfaces';
 import MData from '~/components/employer_modal.vue'
 import ViewEmployer from '~/components/view_employer.vue';
+import { del } from '~/server/employer_crud';
 
 const columns = [{
     key: 'name',
@@ -30,28 +31,38 @@ const items = (row: Employer) => [
             modal.open(MData, {
                 type: "UPDATE",
                 fields: ModalFields,
+                oldEmp: row,
                 onSuccess() {
                     toast.add({
-                        title: 'Success !',
-                        id: 'modal-success'
+                        title: 'Sucesso!',
+                        icon: 'i-heroicons-check-badge',
+                        color: 'primary',
+                        description: 'Funcionário atualizado com sucesso.',
+                        id: 'update_success'
                     })
-                }
+                    // toast.add({
+                    //     title: 'Erro!',
+                    //     icon: 'i-heroicons-x-circle',
+                    //     color: 'red',
+                    //     description: 'Algum erro ocorreu.',
+                    //     id: 'update_error'
+                    // })
+                },
+                close: modal.close
             })
         }
     }, {
         label: 'Deletar',
         icon: 'i-heroicons-trash-20-solid',
-        click: async () => {
-            await useFetch(`localhost:5000/api/delete?id=${row.id}`)
-        }
+        click: async () => await del(row._id)
     }], [{
         label: 'Ver Mais',
         icon: 'i-heroicons-information-circle-20-solid',
         click: async () => {
             modal.open(ViewEmployer, {
-                    employer: row,
-                    close: modal.close
-                })
+                employer: row,
+                close: modal.close
+            })
         }
     }]
 ]
@@ -151,6 +162,15 @@ const ModalFields = [
         }
     },
     {
+        label: "Em Serviço?",
+        name: "status",
+        options: {
+            checkbox: {
+                required: true
+            }
+        }
+    },
+    {
         label: "Foto",
         name: "photo",
         options: {
@@ -177,10 +197,21 @@ function openCreate() {
         fields: ModalFields,
         onSuccess() {
             toast.add({
-                title: 'Success !',
-                id: 'success'
+                title: 'Sucesso!',
+                icon: 'i-heroicons-check-badge',
+                color: 'primary',
+                description: 'Funcionário criado com sucesso.',
+                id: 'create_success'
             })
-        }
+            // toast.add({
+            //     title: 'Erro!',
+            //     icon: 'i-heroicons-x-circle',
+            //     color: 'red',
+            //     description: 'Algum erro ocorreu.',
+            //     id: 'create_error'
+            // })
+        },
+        close: modal.close
     })
 }
 

@@ -7,7 +7,7 @@ interface Employer {
         base64: string | null,
         imgType: string | null
     },
-    id: string
+    _id: string
 }
 
 interface Sale {

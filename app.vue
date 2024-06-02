@@ -18,5 +18,6 @@ useHead({
       <Footer />
     </div>
     <UModals />
+    <UNotifications />
   </div>
 </template>

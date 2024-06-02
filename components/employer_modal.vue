@@ -2,6 +2,8 @@
 import { object, number, string, type InferType, ObjectSchema, boolean } from 'yup'
 import type { FormSubmitEvent } from '#ui/types'
 import { processImage } from '~/server/processImage';
+import { update, create } from '~/server/employer_crud'
+import type { Employer } from '~/server/interfaces';
 
 type RoleTypes = "Desenvolvimento" | "Recursos Humanos" | "Administração"
 
@@ -20,6 +22,7 @@ interface EmpUValues {
 
 const props = defineProps<{
     type: "CREATE" | "UPDATE",
+    oldEmp?: Employer,
     fields: {
         label: string,
         name: string,
@@ -40,9 +43,14 @@ const props = defineProps<{
                 types?: string[],
                 description?: string,
                 required: boolean
+            },
+            checkbox?: {
+                style?: string,
+                required: boolean
             }
         }
-    }[]
+    }[],
+    close: () => Promise<void>
 }>()
 
 const schema: ObjectSchema<EmpCValues> | ObjectSchema<EmpUValues> = props.type === "CREATE" ? object({
@@ -58,6 +66,7 @@ const schema: ObjectSchema<EmpCValues> | ObjectSchema<EmpUValues> = props.type =
                     if (!isValid) context?.createError();
                     return isValid;
                 }
+                return true;
             }
         })
 }) : object({
@@ -73,6 +82,8 @@ const schema: ObjectSchema<EmpCValues> | ObjectSchema<EmpUValues> = props.type =
                     const isValid = ["png", "jpg", "jpeg", "webp"].includes((file?.split('.') as unknown as string)[1]);
                     if (!isValid) context?.createError();
                     return isValid;
+                } else {
+                    return true
                 }
             }
         })
@@ -80,9 +91,10 @@ const schema: ObjectSchema<EmpCValues> | ObjectSchema<EmpUValues> = props.type =
 
 type Schema = InferType<typeof schema>
 
-const obj: { [key: string]: undefined } = {}
+const obj: { [key: string]: any } = {}
 for (const i of props.fields) {
-    obj[i.name] = undefined
+    //@ts-ignore
+    obj[i.name] = props.oldEmp ? i.options?.image ? undefined : props.oldEmp[i.name] : undefined
 }
 
 const file: Ref<File | null> = ref(null)
@@ -92,21 +104,66 @@ const handleFileChange = (files: FileList) => {
     file.value = (files as FileList)[0];
 };
 
-const emit = defineEmits(['success'])
+const emit = defineEmits(['success', 'error'])
 async function onSubmit(event: FormSubmitEvent<Schema>) {
 
-    let image = null
-
-    if (file) {
-        if (!file.value) {
-            return;
-        }
-        image = await processImage(file.value);
+    let avatarImage = null
+    if (file && file.value) {
+        avatarImage = await processImage((file as Ref<File>).value);
     }
-    console.log(image)
-    console.log(event.data)
 
-    emit('success')
+    if (props.type === "CREATE") {
+        const { name, salary, role } = event.data
+        try {
+            await create({
+                name,
+                salary,
+                role,
+                avatarImage
+            })
+        } catch (err) {
+            emit('error')
+            return await props.close()
+        }
+
+        emit('success')
+        return await props.close() 
+    } else if (props.type === 'UPDATE' && props.oldEmp) {
+        const { name, salary, role, status } = event.data as EmpUValues
+
+        const compareOldObj = {
+            name: props.oldEmp.name,
+            salary: props.oldEmp.salary,
+            role: props.oldEmp.role,
+            status: props.oldEmp.status,
+            avatarImage: null
+        }
+
+        let compareNewObj: { name: string, salary: number, role: string, status: boolean, avatarImage?: { base64: string, imgType: string } | null } = {
+            name,
+            salary,
+            role,
+            status
+        }
+
+        if (JSON.stringify(compareNewObj) === JSON.stringify(compareOldObj)) {
+            if (props.oldEmp.avatarImage === avatarImage || avatarImage === null) {
+                emit('success')
+                return await props.close();
+            }
+        }
+
+        try {
+            compareNewObj.avatarImage = avatarImage
+            await update(props.oldEmp._id, compareNewObj)
+        } catch (err) {
+            emit('error')
+            return await props.close()
+        }
+
+        emit('success')
+        return await props.close()
+    }
 }
 
 </script>
@@ -125,7 +182,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                             <UIcon name="i-heroicons-information-circle" />
                             <div>
                                 {{ field.options.text ? field.options.text.description :
-                                    field.options.image?.description }}
+                                field.options.image?.description }}
                             </div>
                         </div>
                     </template>
@@ -138,6 +195,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                             :placeholder="field.options.select_menu.placeholder" />
                         <UInput v-if="field.options?.image" v-model="state[field.name]" @change="handleFileChange"
                             :accept="field.options.image.types?.join(', ')" type="file" size="xl" />
+                        <UCheckbox v-if="field.options?.checkbox" v-model="state[field.name]"
+                            :label="field.name" :style="field.options.checkbox.style" />
                     </template>
                 </UFormGroup>
                 <UButton type="submit" size="xl" class="w-full justify-center">
