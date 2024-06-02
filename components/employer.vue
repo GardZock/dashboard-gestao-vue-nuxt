@@ -38,15 +38,17 @@ const items = (row: Employer) => [
                         icon: 'i-heroicons-check-badge',
                         color: 'primary',
                         description: 'Funcionário atualizado com sucesso.',
-                        id: 'update_success'
+                        id: 'modal-success'
                     })
-                    // toast.add({
-                    //     title: 'Erro!',
-                    //     icon: 'i-heroicons-x-circle',
-                    //     color: 'red',
-                    //     description: 'Algum erro ocorreu.',
-                    //     id: 'update_error'
-                    // })
+                },
+                onError() {
+                    toast.add({
+                        title: 'Erro!',
+                        icon: 'i-heroicons-x-circle',
+                        color: 'red',
+                        description: 'Algum erro ocorreu.',
+                        id: 'modal-error'
+                    })
                 },
                 close: modal.close
             })
@@ -201,15 +203,17 @@ function openCreate() {
                 icon: 'i-heroicons-check-badge',
                 color: 'primary',
                 description: 'Funcionário criado com sucesso.',
-                id: 'create_success'
+                id: 'modal-success'
             })
-            // toast.add({
-            //     title: 'Erro!',
-            //     icon: 'i-heroicons-x-circle',
-            //     color: 'red',
-            //     description: 'Algum erro ocorreu.',
-            //     id: 'create_error'
-            // })
+        },
+        onError() {
+            toast.add({
+                title: 'Erro!',
+                icon: 'i-heroicons-x-circle',
+                color: 'red',
+                description: 'Algum erro ocorreu.',
+                id: 'modal-error'
+            })
         },
         close: modal.close
     })
