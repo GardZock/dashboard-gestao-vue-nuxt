@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { Employer } from '~/server/interfaces';
-import MData from '~/components/employer_modal.vue'
-import ViewEmployer from '~/components/view_employer.vue';
+import MData from '~/components/employer/employer.modal.vue'
+import ViewEmployer from '~/components/employer/view_employer.vue';
 import { del } from '~/server/employer_crud';
 
 const columns = [{
     key: 'name',
     label: 'Nome',
-    sortable: true
+    sortable: true,
+    direction: 'asc' as const
 }, {
     key: 'role',
     label: 'Setor'
@@ -40,6 +41,7 @@ const items = (row: Employer) => [
                         description: 'Funcionário atualizado com sucesso.',
                         id: 'modal-success'
                     })
+                    updt.value = !updt.value;
                 },
                 onError() {
                     toast.add({
@@ -49,6 +51,7 @@ const items = (row: Employer) => [
                         description: 'Algum erro ocorreu.',
                         id: 'modal-error'
                     })
+                    updt.value = !updt.value;
                 },
                 close: modal.close
             })
@@ -86,14 +89,7 @@ const filterStatus = [{
 
 const search = ref('')
 const selectedStatus: Ref<{ key: string, label: string, value: string | boolean }> = ref(filterStatus[2])
-
-const sort = ref({ column: 'name', direction: 'asc' as const })
-// FUTURAS ADIÇÕES
-const page = ref(1)
-const pageCount = ref(10)
-const pageTotal = ref(20)
-const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
-const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
+const updt: Ref<boolean> = ref(false);
 
 // REQUEST DATA
 const headers = new Headers();
@@ -105,7 +101,7 @@ const { pending, data: employees } = await useLazyAsyncData<Employer[]>('employe
         headers,
     }), {
     default: () => [],
-    watch: [page, pageCount, sort]
+    watch: [updt]
 })
 
 const filteredRows = computed(() => {
@@ -205,6 +201,7 @@ function openCreate() {
                 description: 'Funcionário criado com sucesso.',
                 id: 'modal-success'
             })
+            updt.value = !updt.value;
         },
         onError() {
             toast.add({
@@ -214,6 +211,7 @@ function openCreate() {
                 description: 'Algum erro ocorreu.',
                 id: 'modal-error'
             })
+            updt.value = !updt.value;
         },
         close: modal.close
     })
@@ -250,7 +248,7 @@ function openCreate() {
             emptyState: {
                 icon: 'w-10 h-10 mx-auto text-gray-400 dark:text-gray-500 mb-4'
             }
-        }" v-model:sort="sort" sort-mode="auto" :loading="pending"
+        }" sort-mode="auto" :loading="pending"
             :empty-state="{ icon: 'i-heroicons-user-group-20-solid', label: 'Nenhum funcionário encontrado.' }">
 
             <template #status-header="{ column }">
@@ -291,31 +289,5 @@ function openCreate() {
                 </div>
             </template>
         </UTable>
-
-        <div class="flex justify-between items-center w-full mt-4 px-2">
-            <div>
-                <span class="text-sm leading-5">
-                    Mostrando
-                    <span class="font-medium">{{ pageFrom }}</span>
-                    até
-                    <span class="font-medium">{{ pageTo }}</span>
-                    de
-                    <span class="font-medium">{{ pageTotal }}</span>
-                    resultados.
-                </span>
-            </div>
-
-            <div>
-                <UPagination v-model="page" :page-count="pageCount" :total="pageTotal" :ui="{
-                    wrapper: 'flex items-center gap-1',
-                    rounded: '!rounded-full min-w-[32px] justify-center',
-                    default: {
-                        activeButton: {
-                            variant: 'outline'
-                        }
-                    }
-                }" />
-            </div>
-        </div>
     </div>
 </template>
