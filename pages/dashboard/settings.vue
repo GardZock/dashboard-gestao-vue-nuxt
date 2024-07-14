@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import DashNav from '~/components/dashboard_nav.vue';
+definePageMeta({
+  title: 'CRUD | Configurações'
+})
 </script>
 
 <template>

@@ -6,11 +6,15 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1',
     }
   },
+  nitro: {
+    prerender: {
+      routes: ['/'],
+    }
+  },
   devtools: { enabled: true },
   typescript: {
     typeCheck: true
   },
-  plugins: ["~/plugins/oh-vue-icons.ts"],
   modules: ['@nuxt/ui', '@nuxtjs/tailwindcss'],
   tailwindcss: {
     exposeConfig: true,
@@ -18,5 +22,6 @@ export default defineNuxtConfig({
   },
   colorMode: {
     preference: 'light'
-  }
+  },
+  icon: {}
 })

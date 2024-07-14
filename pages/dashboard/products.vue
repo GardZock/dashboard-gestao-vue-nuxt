@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import DashNav from '~/components/dashboard_nav.vue';
 import Products from '~/components/product.vue';
-
+definePageMeta({
+  title: 'CRUD | Produtos'
+})
 </script>
 
 <template>

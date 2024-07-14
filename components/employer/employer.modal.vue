@@ -16,7 +16,7 @@ interface EmpCValues {
 interface EmpUValues {
     name: string,
     salary: number,
-    role: RoleTypes,
+    role: RoleTypes,    
     status: boolean
 }
 

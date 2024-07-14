@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import DashNav from '~/components/dashboard_nav.vue';
 import Employees from '~/components/employer.vue';
+definePageMeta({
+  title: 'CRUD | Funcionários'
+})
+
 </script>
 
 <template>
