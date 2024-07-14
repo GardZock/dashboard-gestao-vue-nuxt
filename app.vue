@@ -21,3 +21,18 @@ useHead({
     <UNotifications />
   </div>
 </template>
+
+<style>
+body::-webkit-scrollbar {
+  width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+  background: rgb(164, 164, 164);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: rgb(112, 112, 112);
+  border-radius: 20px;
+}
+</style>

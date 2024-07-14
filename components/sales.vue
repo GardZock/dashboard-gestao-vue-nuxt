@@ -82,7 +82,7 @@ const sales: Sale[] = [
         costumer_name: "Lucas Pereira",
         products: [
             {
-                id: "p7",
+                id: "Produto 2",
                 price: 90.00,
                 quantity: 5
             }
@@ -98,9 +98,9 @@ const sales: Sale[] = [
                 price: 110.00,
                 quantity: 1
             },{
-                id: "p12",
+                id: "Camera",
                 price: 60.00,
-                quantity: 5
+                quantity: 6
             }
         ],
         sellDate: "2024-05-22",
@@ -126,7 +126,7 @@ const sales: Sale[] = [
                 price: 60.00,
                 quantity: 2
             },{
-                id: "p12",
+                id: "Produto 3",
                 price: 60.00,
                 quantity: 5
             }
@@ -187,7 +187,7 @@ const options = {
                 </template>
 
                 <Line v-if="sales" :data="data" :options="options" height="20%" width="100%" />
-                <div class="h-1/5 w-full flex justify-center items-center">
+                <div v-if="!sales" class="h-[200px] w-full flex justify-center items-center">
                     <h2>Sem dados</h2>
                 </div>
             </UCard>
